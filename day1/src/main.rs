@@ -9,8 +9,8 @@ fn main() {
         let data: Vec<i32> = reader.lines()
             .filter_map(|line| line.unwrap().parse().ok())
             .collect();
-        println!("Growing depth on {} items", how_many_grown(&data[..]));
-        println!("Growing avaraged depth on {} items", how_many_grown(&sum_three_window(&data[..])[..]));
+        println!("Growing depth on {} items", how_many_grown(data.as_slice()));
+        println!("Growing avaraged depth on {} items", how_many_grown(sum_three_window(data.as_slice()).as_slice()));
     }
 }
 pub fn sum_three_window(input: &[i32]) -> Vec<i32> {
