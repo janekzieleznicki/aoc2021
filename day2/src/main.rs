@@ -76,7 +76,6 @@ impl FromStr for Movement {
     type Err = ();
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let splitted = s.split_once(' ');
         if let Some((cmd, inc)) = s.split_once(' ') {
             match cmd {
                 "up" => return Ok(Movement::Vertical(-(inc.parse::<i32>().unwrap()))),
