@@ -1,6 +1,5 @@
 use std::collections::VecDeque;
 use std::fs;
-use std::fs::read_to_string;
 use std::str::FromStr;
 use crate::bingo_board::BingoBoard;
 
@@ -28,7 +27,7 @@ struct BingoGame {
 impl BingoGame {
     pub fn winning_score(&mut self) -> u64 {
         for num in &self.numbers {
-            for mut bingo_board in self.boards.as_mut_slice() {
+            for bingo_board in self.boards.as_mut_slice() {
                 match bingo_board.mark(*num) {
                     None => {}
                     Some(res) => return res
@@ -39,19 +38,17 @@ impl BingoGame {
     }
     pub fn losing_score(&mut self) -> u64 {
         let mut losing_num = 0;
-        let mut idx = 0;
         while self.boards.len() > 1 {
             losing_num = self.numbers.pop_front().unwrap();
             dbg!("num: {}, board_count: {}",losing_num,self.boards.len());
             let updated_boards = self.boards.iter_mut()
-                .filter_map(|mut board|
+                .filter_map(|board|
                     match board.mark(losing_num) {
                         None => Some(board.clone()),
                         Some(_) => None
                     })
                 .collect();
             self.boards = updated_boards;
-            idx+=1;
         }
         dbg!("Last num: {} | \n{:?}",losing_num,&self.boards);
         self.winning_score()
