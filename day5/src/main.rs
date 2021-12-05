@@ -23,7 +23,7 @@ fn main() {
         reader.lines()
             .map(|str| str.unwrap().parse::<Line>().unwrap())
             .filter(|line|line.is_horizontal_vertical_or_diagonal())
-            .for_each(|line|board.mark_part2(line));
+            .for_each(|line|board.mark(line));
         println!("Part2 marked points count: {}", board.marked_at_least(2))
     }
 }
@@ -55,7 +55,7 @@ mod main_test{
             reader.lines()
                 .map(|str| str.unwrap().parse::<Line>().unwrap())
                 .filter(|line|line.is_horizontal_vertical_or_diagonal())
-                .for_each(|line|board.mark_part2(line));
+                .for_each(|line|board.mark(line));
             assert_eq!(board.marked_at_least(2),12);
         }
     }
