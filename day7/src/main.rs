@@ -70,11 +70,11 @@ pub fn get_minimum_used_fuel(start_pos: &[i64]) -> Result<i64, ()> {
     else if total_fuel_used(start_pos, avg_pos - 1) > total_fuel_used(start_pos, avg_pos) {
         //go right
         return get_least_eval_in_range(
-            (avg_pos..=*start_pos.iter().max().unwrap()),
+            (avg_pos..=*start_pos.iter().max().unwrap()).step_by(1),
             |target_pos| total_fuel_used(start_pos, target_pos));
     } else if total_fuel_used(start_pos, avg_pos + 1) > total_fuel_used(start_pos, avg_pos) {
         return get_least_eval_in_range(
-            (0..=avg_pos).rev(),
+            (0..avg_pos).rev().step_by(1),
             |target_pos| total_fuel_used(start_pos, target_pos));
     } else {
         Ok(total_fuel_used(start_pos, avg_pos))
