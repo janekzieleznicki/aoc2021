@@ -22,14 +22,11 @@ fn main() {
             .into_iter()
             .filter_map(|pos_str| pos_str.parse().ok())
             .collect();
-        let mut used_fuel: Vec<i64> = vec![];
-        for crab_pos in *horizontal_pos.iter().min().unwrap()..=*horizontal_pos.iter().max().unwrap() {
-            used_fuel.push(
-                horizontal_pos.iter()
-                    .fold(0, |acc, pos|
-                        acc + calc_cost((pos - crab_pos).abs())));
-        }
-        println!("Part2 Minimum fuel: {}", *used_fuel.iter().min().unwrap());
+        let fuel = (*horizontal_pos.iter().min().unwrap()..=*horizontal_pos.iter().max().unwrap()).into_iter()
+            .map(|crab_pos| {
+                horizontal_pos.iter().fold(0, |acc, pos| acc + calc_cost((pos - crab_pos).abs()))
+            }).min().unwrap();
+        println!("Part2 Minimum fuel: {}", fuel);
     }
 }
 
@@ -68,14 +65,10 @@ mod test {
         let horizontal_pos: Vec<i64> = "16,1,2,0,4,2,7,1,2,14".split(',')
             .into_iter().filter_map(|pos_str| pos_str.parse().ok()).collect();
         println!("{:?}", horizontal_pos);
-        let range = horizontal_pos.iter().min().unwrap()..horizontal_pos.iter().max().unwrap();
-        let mut used_fuel: Vec<i64> = vec![];
-        for crab_pos in *horizontal_pos.iter().min().unwrap()..=*horizontal_pos.iter().max().unwrap() {
-            used_fuel.push(
-                horizontal_pos.iter()
-                    .fold(0, |acc, pos|
-                        acc + calc_cost((pos - crab_pos).abs())));
-        }
-        assert_eq!(*used_fuel.iter().min().unwrap(), 168);
+        let fuel = (*horizontal_pos.iter().min().unwrap()..=*horizontal_pos.iter().max().unwrap()).into_iter()
+            .map(|crab_pos| {
+                horizontal_pos.iter().fold(0, |acc, pos| acc + calc_cost((pos - crab_pos).abs()))
+            }).min().unwrap();
+        assert_eq!(fuel, 168);
     }
 }
