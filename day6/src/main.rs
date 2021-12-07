@@ -60,13 +60,13 @@ impl FromStr for LanternFishSchool {
 
 fn fish_at_day(string: &str, days: usize) -> usize {
     let mut immature_fish = VecDeque::from([0, 0]);
-    let mut new_fish_at_day : HashMap<usize,u128> = HashMap::from(
+    let mut new_fish_at_day: HashMap<usize, u128> = HashMap::from(
         [(0, 0), (1, 0), (2, 0), (3, 0), (4, 0), (5, 0), (6, 0)]);
     string.split(',')
         .into_iter()
         .filter_map(|s| s.parse().ok())
         .for_each(|int: usize| {
-            let mut fish = new_fish_at_day.entry(int).or_insert(0);
+            let fish = new_fish_at_day.entry(int).or_insert(0);
             *fish += 1;
         });
     let mut day = 0;
@@ -74,26 +74,21 @@ fn fish_at_day(string: &str, days: usize) -> usize {
         day += 1;
         if day == 7 { day = 0; }
         let fishes_to_spawn = *new_fish_at_day.get(&day).unwrap();
-        {
-            immature_fish.push_back(fishes_to_spawn);
-            if let Some(fishes_at_today) = new_fish_at_day.get_mut(&day) {
-                *fishes_at_today = *fishes_at_today + immature_fish.pop_front().unwrap();
-            }
-            assert_eq!(immature_fish.len(), 2)
+
+        immature_fish.push_back(fishes_to_spawn);
+        if let Some(fishes_at_today) = new_fish_at_day.get_mut(&day) {
+            *fishes_at_today = *fishes_at_today + immature_fish.pop_front().unwrap();
         }
+        assert_eq!(immature_fish.len(), 2);
+
         println!("{:#?}", new_fish_at_day);
     }
-    new_fish_at_day.iter().fold(0, |acc, (day, count)| acc + *count as usize)
+    new_fish_at_day.iter().fold(0, |acc, (_, count)| acc + *count as usize)
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::{fish_at_day, LanternFish, LanternFishSchool};
-
-    #[test]
-    fn parse() {
-        let fish: LanternFish = "4".parse().unwrap();
-    }
+    use crate::{fish_at_day, LanternFishSchool};
 
     #[test]
     fn with_test_data() {
@@ -113,15 +108,15 @@ mod tests {
     fn test_data() {
         for i in 0..=18 {
             let mut fishes: LanternFishSchool = "3,4,3,1,2".parse().unwrap();
-            for j in 0..i { fishes.tick(); }
-            println!("{:?}",fishes);
+            for _ in 0..i { fishes.tick(); }
+            println!("{:?}", fishes);
             assert_eq!(fish_at_day("3,4,3,1,2", i), fishes.count());
         }
         let mut fishes: LanternFishSchool = "3,4,3,1,2".parse().unwrap();
-        for i in 1..=18 { fishes.tick(); }
+        for _ in 1..=18 { fishes.tick(); }
         assert_eq!(fishes.count(), 26);
         assert_eq!(fish_at_day("3,4,3,1,2", 18), 26);
-        for i in 19..=80 { fishes.tick(); }
+        for _ in 19..=80 { fishes.tick(); }
         assert_eq!(fishes.count(), 5934);
         assert_eq!(fish_at_day("3,4,3,1,2", 80), 5934);
     }
@@ -134,5 +129,5 @@ fn main() {
         fishes.tick();
         println!("Day {}: {} fishes", i, fishes.count())
     }
-    println!("Day 256: {} fishes", fish_at_day(str.as_str(),256));
+    println!("Day 256: {} fishes", fish_at_day(str.as_str(), 256));
 }
