@@ -31,8 +31,6 @@ fn main() {
                 horizontal_pos.iter().fold(0, |acc, pos| acc + calc_cost((pos - crab_pos).abs()))
             }).min().unwrap();
         println!("Part2 Minimum fuel: {}", fuel);
-
-
     }
 }
 
@@ -50,31 +48,29 @@ pub fn total_fuel_used(start_pos: &[i64], end_pos: i64) -> i64 {
 
 pub fn get_least_eval_in_range<T: IntoIterator<Item=i64>, F: Fn(i64) -> i64>(iterable: T, fun: F) -> Result<i64, ()> {
     let mut iter = iterable.into_iter();
-    let previous = fun(iter.next().ok_or(())?);
+    let mut previous = fun(iter.next().ok_or(())?);
     for target in iter {
-        if previous < fun(target) {
+        let cur = fun(target);
+        if previous < cur {
             return Ok(previous);
         }
+        previous = cur;
     }
     Err(())
 }
 
-///Assumes that
+///Assumes that the function has only one minima
 pub fn get_minimum_used_fuel(start_pos: &[i64]) -> Result<i64, ()> {
     let mut avg_pos = (start_pos.iter().sum::<i64>() as f64 / start_pos.len() as f64).round() as i64;
-    // let mut avg_pos = start_pos[4];
-    if total_fuel_used(start_pos, avg_pos - 1) > total_fuel_used(start_pos, avg_pos)
-        && total_fuel_used(start_pos, avg_pos + 1) > total_fuel_used(start_pos, avg_pos){
-        Ok(total_fuel_used(start_pos, avg_pos))
-    }
-    else if total_fuel_used(start_pos, avg_pos - 1) > total_fuel_used(start_pos, avg_pos) {
+    if total_fuel_used(start_pos, avg_pos - 1) > total_fuel_used(start_pos, avg_pos) {
         //go right
         return get_least_eval_in_range(
-            (avg_pos..=*start_pos.iter().max().unwrap()).step_by(1),
+            (avg_pos..=*start_pos.iter().max().unwrap()),
             |target_pos| total_fuel_used(start_pos, target_pos));
     } else if total_fuel_used(start_pos, avg_pos + 1) > total_fuel_used(start_pos, avg_pos) {
+        //go left
         return get_least_eval_in_range(
-            (0..avg_pos).rev().step_by(1),
+            (0..avg_pos).rev(),
             |target_pos| total_fuel_used(start_pos, target_pos));
     } else {
         Ok(total_fuel_used(start_pos, avg_pos))
@@ -125,6 +121,21 @@ mod day7test {
     }
 
     #[bench]
+    fn calc_inefficient(b: &mut Bencher) {
+        let str = fs::read_to_string("input_data.dat").unwrap();
+        let horizontal_pos: Vec<i64> = str.split(',')
+            .into_iter()
+            .filter_map(|pos_str| pos_str.parse().ok())
+            .collect();
+        b.iter(|| {
+            let fuel = (*horizontal_pos.iter().min().unwrap()..=*horizontal_pos.iter().max().unwrap()).into_iter()
+                .map(|crab_pos| {
+                    horizontal_pos.iter().fold(0, |acc, pos| acc + calc_cost_slow((pos - crab_pos).abs()))
+                }).min().unwrap();
+            assert_eq!(fuel, 93397632);
+        })
+    }
+    #[bench]
     fn calc_efficient(b: &mut Bencher) {
         let str = fs::read_to_string("input_data.dat").unwrap();
         let horizontal_pos: Vec<i64> = str.split(',')
@@ -141,7 +152,7 @@ mod day7test {
     }
 
     #[bench]
-    fn calc_inefficient(b: &mut Bencher) {
+    fn find_minima(b: &mut Bencher) {
         let str = fs::read_to_string("input_data.dat").unwrap();
         let horizontal_pos: Vec<i64> = str.split(',')
             .into_iter()
