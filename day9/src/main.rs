@@ -1,4 +1,5 @@
 #![feature(int_abs_diff)]
+#![feature(test)]
 
 use std::fs;
 use std::str::Lines;
@@ -96,6 +97,9 @@ pub fn part_2(arr: &Array2<u8>) -> usize {
 
 #[cfg(test)]
 mod tests {
+    extern crate test;
+    use std::fs;
+    use test::Bencher;
     use crate::{basin_area, explore_from_point, parse, part_1, part_2};
 
     static TEST_DATA: &str = r#"2199943210
@@ -119,5 +123,22 @@ mod tests {
         assert_eq!(basin_area(&arr,0,0),3);
         assert_eq!(basin_area(&arr, 0, 8), 9);
         assert_eq!(basin_area(&arr, 3, 3), 14);
+    }
+
+    #[bench]
+    fn day9_part1(b: &mut Bencher) {
+        let str = fs::read_to_string("input_data.dat").unwrap();
+        let arr = parse(str.lines());
+        b.iter(|| {
+            assert_eq!(part_1(&arr), 439);
+        })
+    }
+    #[bench]
+    fn day9_part2(b: &mut Bencher) {
+        let str = fs::read_to_string("input_data.dat").unwrap();
+        let arr = parse(str.lines());
+        b.iter(|| {
+            assert_eq!(part_2(&arr), 900900);
+        })
     }
 }
