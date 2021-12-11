@@ -1,4 +1,5 @@
 #![feature(int_abs_diff)]
+#![feature(test)]
 
 use std::fmt::{Debug, Formatter};
 use ndarray::{Array1, Array2};
@@ -14,7 +15,16 @@ static INPUT_DATA: &str = r#"5433566276
 8677841514
 1622331631
 5876712227"#;
-
+static TEST_DATA: &str = r#"5483143223
+2745854711
+5264556173
+6141336146
+6357385478
+4167524645
+2176841721
+6882881134
+4846848554
+5283751526"#;
 fn main() {
     {
         let mut octopi = parse(INPUT_DATA);
@@ -37,6 +47,7 @@ fn get_step_synchronized(mut octopi: Array2<Octopus>) -> usize{
     }
     panic!("what happended?")
 }
+#[derive(Clone)]
 struct Octopus {
     energy: u8,
     flashed: bool,
@@ -127,18 +138,7 @@ fn tick(octopi: &mut Array2<Octopus>) -> usize {
 
 #[cfg(test)]
 mod test {
-    use crate::{get_step_synchronized, Octopus, parse, tick};
-
-    static TEST_DATA: &str = r#"5483143223
-2745854711
-5264556173
-6141336146
-6357385478
-4167524645
-2176841721
-6882881134
-4846848554
-5283751526"#;
+    use crate::{get_step_synchronized, Octopus, parse, TEST_DATA, tick};
 
     #[test]
     fn octopus_flash() {
@@ -182,7 +182,7 @@ mod test {
         }
         {
             let octopi = parse(TEST_DATA);
-            assert_eq!(get_step_synchronized(octopi),195);
+            assert_eq!(get_step_synchronized(octopi), 195);
         }
     }
 
@@ -197,5 +197,27 @@ mod test {
         assert_eq!(tick(&mut octopi), 9);
         println!("{:?}", octopi);
         assert_eq!(tick(&mut octopi), 0);
+    }
+}
+mod bench{
+    extern crate test;
+
+    use test::Bencher;
+    use crate::{get_step_synchronized, INPUT_DATA, parse, TEST_DATA};
+
+
+    #[bench]
+    fn part2_test_data(b: &mut Bencher) {
+        let octopi = parse(TEST_DATA);
+        b.iter(|| {
+            assert_eq!(get_step_synchronized(octopi.clone()),195);
+        })
+    }
+    #[bench]
+    fn part2_input_data(b: &mut Bencher) {
+        let octopi = parse(INPUT_DATA);
+        b.iter(|| {
+            assert_eq!(get_step_synchronized(octopi.clone()),235);
+        })
     }
 }
