@@ -1,9 +1,7 @@
 #![feature(test)]
 
-use std::error::Error;
 use std::fs;
 use std::ops::Div;
-use std::vec::IntoIter;
 
 fn main() {
     {
@@ -61,11 +59,11 @@ pub fn get_least_eval_in_range<T: IntoIterator<Item=i64>, F: Fn(i64) -> i64>(ite
 
 ///Assumes that the function has only one minima
 pub fn get_minimum_used_fuel(start_pos: &[i64]) -> Result<i64, ()> {
-    let mut avg_pos = (start_pos.iter().sum::<i64>() as f64 / start_pos.len() as f64).round() as i64;
+    let avg_pos = (start_pos.iter().sum::<i64>() as f64 / start_pos.len() as f64).round() as i64;
     if total_fuel_used(start_pos, avg_pos - 1) > total_fuel_used(start_pos, avg_pos) {
         //go right
         return get_least_eval_in_range(
-            (avg_pos..=*start_pos.iter().max().unwrap()),
+            avg_pos..=*start_pos.iter().max().unwrap(),
             |target_pos| total_fuel_used(start_pos, target_pos));
     } else if total_fuel_used(start_pos, avg_pos + 1) > total_fuel_used(start_pos, avg_pos) {
         //go left

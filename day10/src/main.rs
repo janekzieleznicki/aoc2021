@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use std::fmt::{Display, Formatter};
+use std::fmt::Formatter;
 use std::{fmt, fs};
 use std::str::Chars;
 use crate::Bracket::{Close, Open};
@@ -173,7 +173,7 @@ mod test {
         let line = "[({(<(())[]>[[{[]{<()<>>";
         assert_eq!(are_brackets_balanced((line.to_owned() + "}}]])})]").as_str()), Ok(()));
         match are_brackets_balanced(line) {
-            Err(BracketBalanceError::Unbalanced { stack: stack }) =>
+            Err(BracketBalanceError::Unbalanced { stack }) =>
                 assert_eq!(completion_chars(stack.chars()), "}}]])})]".chars().collect::<Vec<char>>()),
             _ => panic!()
         }

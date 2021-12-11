@@ -1,6 +1,5 @@
 use std::collections::HashMap;
 use std::fs;
-use std::fs::{File, read};
 use std::str::Lines;
 use itertools::Itertools;
 
@@ -108,7 +107,7 @@ fn decode_numbers(entry: &str) -> usize {
     entry.split_once('|').unwrap().1.split_whitespace().into_iter()
         .map(|code| code.chars().sorted().rev().collect::<String>())
         .map(|code| codes.iter()
-            .find(|(key,val)| val.as_str() == code).unwrap())
+            .find(|(_,val)| val.as_str() == code).unwrap())
         .map(|(key,_)|key.to_string())
         .join("").parse().unwrap()
 }
@@ -125,7 +124,6 @@ fn main() {
 
 #[cfg(test)]
 mod test {
-    use std::io::BufReader;
     use crate::{get_part_1, get_part_2, negate_segments};
 
     static INPUT: &str = r#"be cfbegad cbdgef fgaecd cgeb fdcge agebfd fecdb fabcd edb | fdgacbe cefdb cefbgd gcbe
