@@ -100,7 +100,7 @@ mod tests {
     extern crate test;
     use std::fs;
     use test::Bencher;
-    use crate::{basin_area, explore_from_point, parse, part_1, part_2};
+    use crate::{basin_area, parse, part_1, part_2};
 
     static TEST_DATA: &str = r#"2199943210
 3987894921

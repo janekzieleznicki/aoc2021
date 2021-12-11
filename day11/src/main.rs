@@ -127,7 +127,7 @@ fn tick(octopi: &mut Array2<Octopus>) -> usize {
 
 #[cfg(test)]
 mod test {
-    use crate::{get_flashing_octopi, get_step_synchronized, Octopus, parse, tick};
+    use crate::{get_step_synchronized, Octopus, parse, tick};
 
     static TEST_DATA: &str = r#"5483143223
 2745854711
@@ -181,8 +181,7 @@ mod test {
             assert_eq!(sum, 1656);
         }
         {
-            let mut octopi = parse(TEST_DATA);
-
+            let octopi = parse(TEST_DATA);
             assert_eq!(get_step_synchronized(octopi),195);
         }
     }

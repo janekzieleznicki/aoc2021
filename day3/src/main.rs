@@ -1,6 +1,6 @@
 use std::ops::Shl;
 
-use std::fs::{File, read};
+use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::str::FromStr;
 
@@ -143,7 +143,6 @@ mod tests {
 
     #[test]
     fn part_2_test() {
-        let mut res = vec![0; "00100".len()];
         let input: Vec<Vec<u8>> = TEST_DATA.lines()
             .map(|line| str_to_numbers(line))
             .collect();
