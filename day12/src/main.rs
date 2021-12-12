@@ -143,13 +143,16 @@ fn find_paths(begin: Cave, finish: Cave, cave_system: &CaveSystem) -> Vec<Vec<Ca
 fn is_path_valid(candidate_path: &Vec<Cave>) -> bool {
     let mut counts: HashMap<Cave, usize> = HashMap::new();
     for cave in candidate_path {
-        *counts.entry(cave.clone()).or_insert(0) += 1;
-    }
-    counts.into_iter().filter(|(cave, count)|
         match cave {
-            Cave::Small { name: _ } => *count >= 2,
-            _ => false
-        }).count() < 2
+            Cave::Small { name: _ } => {
+                let mut count = counts.entry(cave.clone()).or_insert(0);
+                *count += 1;
+                if *count > 2 { return false; }
+            }
+            _ => continue
+        }
+    }
+    counts.into_values().filter(|cnt| *cnt >= 2).count() <= 1
 }
 
 fn find_paths_part2_impl(finish: Cave, cave_system: &CaveSystem, start_path: Vec<Cave>) -> Vec<Vec<Cave>> {
@@ -272,10 +275,10 @@ start,A,b,A,c,b,A,c,A,c,A,end
 
 mod bench {
     /*
-    test bench::part1_input_data ... bench:   8,686,453 ns/iter (+/- 94,282)
-    test bench::part1_test_data  ... bench:       3,575 ns/iter (+/- 48)
-    test bench::part2_input_data ... bench: 1,607,655,102 ns/iter (+/- 18,024,978)
-    test bench::part2_test_data  ... bench:      51,680 ns/iter (+/- 399)
+    test bench::part1_input_data ... bench:   8,591,284 ns/iter (+/- 262,300)
+    test bench::part1_test_data  ... bench:       3,618 ns/iter (+/- 198)
+    test bench::part2_input_data ... bench: 1,127,565,216 ns/iter (+/- 14,505,783)
+    test bench::part2_test_data  ... bench:      34,699 ns/iter (+/- 3,515)
     */
     extern crate test;
 
