@@ -2,8 +2,10 @@
 #![feature(test)]
 
 use std::fs;
+use rayon::prelude::*;
 use std::str::Lines;
 use ndarray::{Array1, Array2};
+use ndarray::parallel::prelude::*;
 use fs::read_to_string;
 use std::collections::HashSet;
 use itertools::{Itertools};
@@ -58,7 +60,7 @@ fn basin_area(arr: &Array2<u8>, row: usize, col: usize) -> usize {
             .map(|(row, col)| explore_from_point(&arr, *row, *col))
             .flatten()
             .collect();
-        println!("points: {:?}", points);
+        // println!("points: {:?}", points);
     }
     points.len()
 }
@@ -79,25 +81,29 @@ pub fn part_1(arr: &Array2<u8>) -> usize {
 
 pub fn part_2(arr: &Array2<u8>) -> usize {
     arr.indexed_iter()
+        .collect::<Vec<_>>()
+        .par_iter()
         .filter(|((x, y), val)| {
             let prev = if x > &0 { arr.get([x - 1, *y]) } else { None };
             is_min(prev, val, arr.get([x + 1, *y]))
-        }
-        )
+        })
         .filter(|((x, y), val)| {
             let prev = if y > &0 { arr.get([*x, y - 1]) } else { None };
             is_min(prev, val, arr.get([*x, y + 1]))
-        }
-        ).map(|((x, y), _)| basin_area(&arr, x, y))
+        })
+        .map(|((x, y), _)| basin_area(&arr, *x, *y))
+        .collect::<Vec<_>>()
+        .into_iter()
         .sorted()
         .rev()
         .take(3)
-        .fold(1,|acc, val|acc*val)
+        .fold(1, |acc, val| acc * val)
 }
 
 #[cfg(test)]
 mod tests {
     extern crate test;
+
     use std::fs;
     use test::Bencher;
     use crate::{basin_area, explore_from_point, parse, part_1, part_2};
@@ -120,7 +126,7 @@ mod tests {
     fn basin_area_data() {
         let arr = parse(TEST_DATA.lines());
         println!("{:#?}", arr);
-        assert_eq!(basin_area(&arr,0,0),3);
+        assert_eq!(basin_area(&arr, 0, 0), 3);
         assert_eq!(basin_area(&arr, 0, 8), 9);
         assert_eq!(basin_area(&arr, 3, 3), 14);
     }
@@ -133,6 +139,7 @@ mod tests {
             assert_eq!(part_1(&arr), 439);
         })
     }
+
     #[bench]
     fn day9_part2(b: &mut Bencher) {
         let str = fs::read_to_string("input_data.dat").unwrap();
