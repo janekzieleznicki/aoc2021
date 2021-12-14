@@ -145,7 +145,7 @@ fn is_path_valid(candidate_path: &Vec<Cave>) -> bool {
     for cave in candidate_path {
         match cave {
             Cave::Small { name: _ } => {
-                let mut count = counts.entry(cave.clone()).or_insert(0);
+                let count = counts.entry(cave.clone()).or_insert(0);
                 *count += 1;
                 if *count > 2 { return false; }
             }
