@@ -113,11 +113,11 @@ impl Origami {
             Instruction::Up { idx } => {
                 println!("Fold UP | Dim: {:?} | idx: {}", self.points.dim(), idx);
                 for mut row in self.points.rows_mut().into_iter() {
-                    let rev = row.iter().skip(idx+1).copied().collect::<Vec<bool>>();
+                    let down = row.iter().skip(idx+1).copied().collect::<Vec<bool>>().into_iter();
                     row.iter_mut()
                         .take(idx )
                         .rev()
-                        .zip(rev.into_iter())
+                        .zip(down)
                         .into_iter()
                         .for_each(|(top, down)| *top = *top | down)
                 }
@@ -126,11 +126,11 @@ impl Origami {
             Instruction::Left { idx } => {
                 println!("Fold LEFT | Dim: {:?} | idx: {}", self.points.dim(), idx);
                 for mut col in self.points.columns_mut().into_iter() {
-                    let right = col.iter().skip(idx+1).copied().collect::<Vec<bool>>();
+                    let right = col.iter().skip(idx+1).copied().collect::<Vec<bool>>().into_iter();
                     col.iter_mut()
                         .take(idx)
                         .rev()
-                        .zip(right.into_iter())
+                        .zip(right)
                         .into_iter()
                         .for_each(|(top, down)| *top = *top | down)
                 }
