@@ -84,10 +84,13 @@ fn part2_btree_map(str: &str, steps: usize) -> usize
     let mut letter_frequencies = BTreeMap::new();
 
     for ((a, b), f) in x {
+        // .0 - occurance when first in pair
+        // .1 - occurance when second in pair
+        println!("x: {}{} : {}",a,b,f);
         letter_frequencies.entry(a).or_insert((0, 0)).0 += f;
         letter_frequencies.entry(b).or_insert((0, 0)).1 += f;
     }
-
+println!("letter_frequencies: {:?}",letter_frequencies);
     if let MinMax(min, max) = letter_frequencies.into_iter().map(|(_, (l, r))| l.max(r)).minmax() {
         max - min
     } else {
@@ -97,13 +100,15 @@ fn part2_btree_map(str: &str, steps: usize) -> usize
 #[cfg(test)]
 mod polymer_tests {
     use std::fs;
-    use crate::{part2_hashmap};
+    use crate::{part2_btree_map, part2_hashmap};
 
     #[test]
     fn with_test_data() {
         let str = fs::read_to_string("test_data.dat").unwrap();
         assert_eq!(part2_hashmap(&str, 10), 1588);
         assert_eq!(part2_hashmap(&str, 40), 2188189693529);
+        assert_eq!(part2_btree_map(&str, 10), 1588);
+        assert_eq!(part2_btree_map(&str, 40), 2188189693529);
     }
 }
 
